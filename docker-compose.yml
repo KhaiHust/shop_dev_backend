@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql-shop-dev:
+    image: mysql:8.0
+    command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3310:3306"
+  zookeeper-shop-dev:
+    image: wurstmeister/zookeeper
+    ports:
+      - 2183:2181
+
+  kafka-shop-dev:
+    image: wurstmeister/kafka
+    ports:
+      - 9094:9092
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:29092,OUTSIDE://localhost:9092
+      KAFKA_LISTENERS: INSIDE://:29092,OUTSIDE://:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    depends_on:
+      - zookeeper-shop-dev
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  redis-shop-dev:
+    container_name: shop_dev-redis
+    image: redis:5.0.6
+    ports:
+      - 6385:6379
