@@ -1,5 +1,12 @@
 package main
 
-func main() {
+import (
+	"go.uber.org/fx"
+	"shop_dev/bootstrap"
+)
 
+func main() {
+	fx.New(
+		bootstrap.All(),
+	).Run()
 }

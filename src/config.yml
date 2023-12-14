@@ -1,3 +1,6 @@
+server:
+  host: localhost
+  port: 8080
 database:
   username: root
   password: 123456
