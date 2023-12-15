@@ -7,3 +7,5 @@ database:
   host: localhost
   port: 3310
   databaseName: shop_dev
+log:
+  level: INFO #ERROR

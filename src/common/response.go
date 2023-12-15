@@ -16,7 +16,8 @@ type ErrorResponse struct {
 const (
 	CannotBindJson      = 40000001
 	CannotCreateNewUser = 40000002
-	InvalidLogin        = 400000003
+	InvalidLogin        = 40000003
+	RecordNotFound      = 40400000
 )
 
 var errResponseMap = map[int]ErrorResponse{
@@ -29,6 +30,11 @@ var errResponseMap = map[int]ErrorResponse{
 		HTTPCode:    http.StatusBadRequest,
 		ServiceCode: CannotCreateNewUser,
 		Message:     "Can not create new user",
+	},
+	RecordNotFound: {
+		HTTPCode:    http.StatusNotFound,
+		ServiceCode: CannotCreateNewUser,
+		Message:     RECORD_NOT_FOUND,
 	},
 }
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"shop_dev/common"
 	"shop_dev/dto/request"
 	"shop_dev/entity"
 	"shop_dev/repository"
@@ -10,6 +11,7 @@ import (
 
 type IUserService interface {
 	CreateNewUser(ctx context.Context, request *request.CreateUserRequest) (*entity.User, error)
+	GetUserByUsername(ctx context.Context, username string) (*entity.User, error)
 }
 
 type UserService struct {
@@ -25,16 +27,30 @@ func NewUserService(databaseTransaction IDatabaseTransaction,
 }
 
 func (u UserService) CreateNewUser(ctx context.Context, request *request.CreateUserRequest) (*entity.User, error) {
-	tx := u.databaseTransaction.StartTransaction()
+	//check existed user
+	existedUser, err := u.GetUserByUsername(ctx, request.Username)
+	if existedUser != nil {
+		log.Error("Username is existed")
+		return nil, err
+	}
+	hashPassword, err := common.HashPassword(request.Password)
+	if err != nil {
+		log.Error("Hash password fail")
+		return nil, err
+	}
 	newUser := request.ToEntityUser()
-	userRsp, err := u.userRepository.CreateUser(ctx, tx, newUser)
+	newUser.Password = hashPassword
+	userRsp, err := u.userRepository.CreateUser(ctx, newUser)
 	if err != nil {
 		return nil, err
 	}
-	err = u.databaseTransaction.CommitTransaction(tx)
-	if err != nil {
-		log.Error("Cannot commit transaction: ", err)
-		return nil, err
-	}
+	log.Info("Create new user successfully")
 	return userRsp, nil
+}
+func (u UserService) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
+	user, err := u.userRepository.GetUserByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

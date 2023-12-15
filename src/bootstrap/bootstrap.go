@@ -16,6 +16,7 @@ func All() fx.Option {
 	return fx.Options(
 		//init
 		fx.Provide(server.NewGinEngine),
+		fx.Invoke(config.NewLogConfig),
 		fx.Invoke(func(*gin.Engine) {}),
 		fx.Provide(config.NewConfig),
 		fx.Invoke(router.NewRegisterRouters),
