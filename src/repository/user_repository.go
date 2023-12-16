@@ -43,13 +43,13 @@ func (u UserRepository) GetUserById(ctx context.Context, ID int) (*entity.User, 
 	return mapper.UserModelToEntity(&userModel), nil
 }
 func (u UserRepository) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
-	var userModel *model.User
-	if err := u.db.WithContext(ctx).Where("username = ?", username).First(userModel).Error; err != nil {
+	var userModel model.User
+	if err := u.db.WithContext(ctx).Where("username = ?", username).First(&userModel).Error; err != nil {
 		log.Error("Can not find user with username: ", username, err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = errors.New(common.RECORD_NOT_FOUND)
 		}
 		return nil, err
 	}
-	return mapper.UserModelToEntity(userModel), nil
+	return mapper.UserModelToEntity(&userModel), nil
 }

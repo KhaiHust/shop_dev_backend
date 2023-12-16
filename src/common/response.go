@@ -36,6 +36,11 @@ var errResponseMap = map[int]ErrorResponse{
 		ServiceCode: CannotCreateNewUser,
 		Message:     RECORD_NOT_FOUND,
 	},
+	InvalidLogin: {
+		HTTPCode:    http.StatusBadRequest,
+		ServiceCode: InvalidLogin,
+		Message:     INVALIDED_LOGIN,
+	},
 }
 
 func GetErrorResponse(code int) ErrorResponse {

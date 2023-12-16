@@ -3,12 +3,12 @@ package response
 import "shop_dev/entity"
 
 type CreateUserResponse struct {
-	ID        uint
-	FirstName string
-	LastName  string
-	Username  string
-	CreatedAt int64
-	UpdatedAt int64
+	ID        uint   `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
+	CreatedAt int64  `json:"created_at"`
+	UpdatedAt int64  `json:"updated_at"`
 }
 
 func ToUserResponse(user *entity.User) *CreateUserResponse {

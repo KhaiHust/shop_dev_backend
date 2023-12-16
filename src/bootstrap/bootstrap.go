@@ -27,7 +27,8 @@ func All() fx.Option {
 
 		//inject service
 		fx.Provide(service.NewDatabaseTransaction),
-		fx.Provide(service.NewUserService),
+		fx.Provide(service.
+			NewUserService),
 
 		//inject controller
 		fx.Provide(controller.NewUserController),

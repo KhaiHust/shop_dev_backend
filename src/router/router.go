@@ -19,6 +19,7 @@ func NewRegisterRouters(p RegisterRoutersIn) {
 		auth := v1.Group("auth")
 		{
 			auth.POST("/signup", p.UserController.CreateNewUser)
+			auth.POST("/login", p.UserController.LoginUser)
 		}
 	}
 }

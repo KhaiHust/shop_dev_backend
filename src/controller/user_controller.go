@@ -29,3 +29,16 @@ func (c *UserController) CreateNewUser(ctx *gin.Context) {
 	}
 	common.SuccessfulHandle(ctx, response.ToUserResponse(newUser))
 }
+func (c *UserController) LoginUser(ctx *gin.Context) {
+	var req request.LoginRequest
+	if err := ctx.BindJSON(&req); err != nil {
+		common.AbortErrorHandleCustomMessage(ctx, common.CannotBindJson, err.Error())
+		return
+	}
+	token, err := c.userService.LoginUser(ctx, &req)
+	if err != nil || len(token) == 0 {
+		common.AbortErrorHandleCustomMessage(ctx, common.InvalidLogin, err.Error())
+		return
+	}
+	common.SuccessfulHandle(ctx, response.ToLoginResponse(token))
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	log "github.com/sirupsen/logrus"
 	"shop_dev/common"
+	"shop_dev/config"
 	"shop_dev/dto/request"
 	"shop_dev/entity"
 	"shop_dev/repository"
@@ -11,18 +12,22 @@ import (
 
 type IUserService interface {
 	CreateNewUser(ctx context.Context, request *request.CreateUserRequest) (*entity.User, error)
-	LoginUser(ctx context.Context, request *request.LoginRequest) (*entity.User, error)
+	LoginUser(ctx context.Context, request *request.LoginRequest) (string, error)
 	GetUserByUsername(ctx context.Context, username string) (*entity.User, error)
 }
 
 type UserService struct {
+	config              *config.Config
 	databaseTransaction IDatabaseTransaction
 	userRepository      repository.IUserRepository
 }
 
-func NewUserService(databaseTransaction IDatabaseTransaction,
+func NewUserService(
+	config *config.Config,
+	databaseTransaction IDatabaseTransaction,
 	userRepository repository.IUserRepository) IUserService {
 	return &UserService{
+		config:              config,
 		databaseTransaction: databaseTransaction,
 		userRepository:      userRepository}
 }
@@ -48,16 +53,23 @@ func (u UserService) CreateNewUser(ctx context.Context, request *request.CreateU
 	log.Info("Create new user successfully")
 	return userRsp, nil
 }
-func (u UserService) LoginUser(ctx context.Context, request *request.LoginRequest) (*entity.User, error) {
+func (u UserService) LoginUser(ctx context.Context, request *request.LoginRequest) (string, error) {
 	existedUser, err := u.GetUserByUsername(ctx, request.Username)
-	if err != nil {
-		return nil, err
+	if err != nil || existedUser == nil {
+		log.Error("Invalid login")
+		return "", err
 	}
 	ok := common.CheckPasswordHash(request.Password, existedUser.Password)
 	if !ok {
-		return nil, err
+		log.Error("Invalid password")
+		return "", err
 	}
-	return nil, nil
+	token, err := common.GenerateJwtToken(u.config, int(existedUser.ID))
+	if err != nil {
+		log.Error("Cannot generate token ", err)
+		return "", err
+	}
+	return token, nil
 }
 func (u UserService) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
 	user, err := u.userRepository.GetUserByUsername(ctx, username)
