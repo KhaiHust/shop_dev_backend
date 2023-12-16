@@ -11,6 +11,7 @@ import (
 
 type IUserService interface {
 	CreateNewUser(ctx context.Context, request *request.CreateUserRequest) (*entity.User, error)
+	LoginUser(ctx context.Context, request *request.LoginRequest) (*entity.User, error)
 	GetUserByUsername(ctx context.Context, username string) (*entity.User, error)
 }
 
@@ -46,6 +47,17 @@ func (u UserService) CreateNewUser(ctx context.Context, request *request.CreateU
 	}
 	log.Info("Create new user successfully")
 	return userRsp, nil
+}
+func (u UserService) LoginUser(ctx context.Context, request *request.LoginRequest) (*entity.User, error) {
+	existedUser, err := u.GetUserByUsername(ctx, request.Username)
+	if err != nil {
+		return nil, err
+	}
+	ok := common.CheckPasswordHash(request.Password, existedUser.Password)
+	if !ok {
+		return nil, err
+	}
+	return nil, nil
 }
 func (u UserService) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
 	user, err := u.userRepository.GetUserByUsername(ctx, username)

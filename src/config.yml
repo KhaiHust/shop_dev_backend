@@ -7,5 +7,8 @@ database:
   host: localhost
   port: 3310
   databaseName: shop_dev
+auth:
+  jwtSecretKey: Khaideptrai
+  exp: 1440
 log:
   level: INFO #ERROR

@@ -4,6 +4,7 @@ type Config struct {
 	HttpConfig server    `mapstructure:"server"`
 	DB         database  `mapstructure:"database"`
 	LogLevel   logConfig `mapstructure:"log"`
+	JwtConfig  jwtConfig `mapstructure:"auth"`
 }
 type database struct {
 	Username     string `mapstructure:"username"`
@@ -18,4 +19,8 @@ type server struct {
 }
 type logConfig struct {
 	Level string `mapstructure:"level"`
+}
+type jwtConfig struct {
+	SecretKey string `mapstructure:"jwtSecretKey"`
+	ExpTime   int    `mapstructure:"exp"`
 }
