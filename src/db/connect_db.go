@@ -13,7 +13,7 @@ type IInitDatabase interface {
 }
 
 func NewInitDatabase(config *config.Config) (*gorm.DB, error) {
-	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?multiStatements=true",
+	url := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		config.DB.Username,
 		config.DB.Password,
 		config.DB.Host,

@@ -20,9 +20,11 @@ func GenerateJwtToken(config *config.Config, ID int) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expTime),
 		},
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	tokenString, err := token.SignedString(config.JwtConfig.SecretKey)
+	//privateKey, err := os.ReadFile("jwtRS256.rsa")
+	//key, err := jwt.ParseRSAPublicKeyFromPEM(privateKey)
+	//key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(config.JwtConfig.SecretKey))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(config.JwtConfig.SecretKey))
 	if err != nil {
 		return "", err
 	}
